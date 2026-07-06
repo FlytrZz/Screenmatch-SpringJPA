@@ -1,20 +1,42 @@
 package br.com.alura.screenmatch.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.OptionalDouble;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 
-import br.com.alura.screenmatch.service.ConsultaChatGPT;
+import br.com.alura.screenmatch.service.tradução.ConsultaMyMemory;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "series")
 public class Serie {
- 
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	
+	@Column(unique = true)
 	private String titulo;
+	
 	private Integer totalTemporadas;
+	
 	private double avaliacao;
+	
 	private String atores;
+	
+	@Enumerated(EnumType.STRING)
 	private Categoria gênero;
+	
 	private String poster;
+	
 	private String sinopse;
+	
+	@Transient
+	private List<Episodio>episodios = new ArrayList<>();
 	
 	public Serie(DadosSerie dadosSerie) {
 		this.titulo = dadosSerie.titulo();
@@ -23,7 +45,7 @@ public class Serie {
 		this.gênero = Categoria.fromString(dadosSerie.gênero().split(",")[0].trim());
 		this.atores = dadosSerie.atores();
 		this.poster = dadosSerie.poster();
-		this.sinopse = ConsultaChatGPT.obterTraducao(dadosSerie.sinopse()).trim();
+		this.sinopse = ConsultaMyMemory.obterTraducao(dadosSerie.sinopse());
 	}
 	
 	@Override
@@ -32,6 +54,8 @@ public class Serie {
 				+ ", atores=" + atores +", poster=" + poster + ", sinopse=" + sinopse;
 	}
 
+	
+	
 	public String getTitulo() {
 		return titulo;
 	}
@@ -86,5 +110,21 @@ public class Serie {
 
 	public void setSinopse(String sinopse) {
 		this.sinopse = sinopse;
+	}
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public List<Episodio> getEpisodios() {
+		return episodios;
+	}
+
+	public void setEpisodios(List<Episodio> episodios) {
+		this.episodios = episodios;
 	}
 }
