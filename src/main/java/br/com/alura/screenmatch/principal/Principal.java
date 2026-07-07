@@ -68,10 +68,10 @@ public class Principal {
     }
 
     private void listarSeriesBuscadas() {
-		List<Serie> series = new ArrayList<>();
-		series = dadosSeries.stream().map(m -> new Serie(m)).collect(Collectors.toList());
+		List<Serie> series = repositorio.findAll();
 		series.stream().sorted(Comparator.comparing(Serie::getGênero)).forEach(System.out::println);
     }
+    
 	private void buscarSerieWeb() {
         DadosSerie dados = getDadosSerie();
         Serie serie = new Serie(dados);
