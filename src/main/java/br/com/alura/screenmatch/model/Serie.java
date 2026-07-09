@@ -26,6 +26,7 @@ public class Serie {
 	
 	private double avaliacao;
 	
+	@Column(columnDefinition = "TEXT")
 	private String atores;
 	
 	@Enumerated(EnumType.STRING)
@@ -33,9 +34,10 @@ public class Serie {
 	
 	private String poster;
 	
+	@Column(columnDefinition = "TEXT")
 	private String sinopse;
 	
-	@Transient
+	@OneToMany(mappedBy = "serie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Episodio>episodios = new ArrayList<>();
 	
 	public Serie() {}
@@ -43,7 +45,11 @@ public class Serie {
 	public Serie(DadosSerie dadosSerie) {
 		this.titulo = dadosSerie.titulo();
 		this.totalTemporadas = dadosSerie.totalTemporadas();
-		this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
+		try{
+			this.avaliacao = OptionalDouble.of(Double.valueOf(dadosSerie.avaliacao())).orElse(0);
+		} catch(NumberFormatException e) {
+			System.out.println(0);
+		}
 		this.gênero = Categoria.fromString(dadosSerie.gênero().split(",")[0].trim());
 		this.atores = dadosSerie.atores();
 		this.poster = dadosSerie.poster();
@@ -53,7 +59,7 @@ public class Serie {
 	@Override
 	public String toString() {
 		return "gênero=" + gênero +", titulo=" + titulo + ", totalTemporadas=" + totalTemporadas + ", avaliacao=" + avaliacao
-				+ ", atores=" + atores +", poster=" + poster + ", sinopse=" + sinopse;
+				+ ", atores=" + atores +", poster=" + poster + ", sinopse=" + sinopse+", episodios=" + episodios;
 	}
 
 	
@@ -127,6 +133,7 @@ public class Serie {
 	}
 
 	public void setEpisodios(List<Episodio> episodios) {
+		episodios.forEach(e -> e.setSerie(this));
 		this.episodios = episodios;
 	}
 }
